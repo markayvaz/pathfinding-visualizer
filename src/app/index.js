@@ -88,10 +88,8 @@ const App = () => {
         </div>
       </aside>
 
-      <div id="grid" ref={grid} className="bg-indigo-100 w-full h-full min-w-[600px] min-h-[600px]">
-        X: {gridDimensions[0]}
-        <p></p>
-        Y: {gridDimensions[1]}
+      <div id="grid-container" ref={grid} className="bg-indigo-100 w-full h-full min-w-[600px] min-h-[600px] p-4">
+        <Grid />
       </div>
     </div>
   );
