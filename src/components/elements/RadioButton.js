@@ -1,6 +1,13 @@
 import React from "react";
 
-const RadioButton = ({ id, label, value, group, disabled }) => {
+const RadioButton = ({
+  id,
+  label,
+  value,
+  group,
+  isDisabled,
+  setChecked,
+}) => {
   return (
     <div className="flex items-center mb-4">
       <input
@@ -9,7 +16,8 @@ const RadioButton = ({ id, label, value, group, disabled }) => {
         name={group}
         value={value}
         className="cursor-pointer w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300"
-        disabled={disabled}
+        disabled={isDisabled}
+        onChange={setChecked}
       />
       <label
         htmlFor={id}
