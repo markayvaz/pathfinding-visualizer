@@ -1,56 +1,17 @@
 import RadioButton from "../components/elements/RadioButton";
 import "./App.css";
 import Grid from "../grid/Grid";
-import {
-  tileSize,
-  gridContainerPadding,
-  minTileDimensions,
-} from "../grid/Sizing";
 import { useEffect, useRef, useState } from "react";
 
 const App = () => {
-  const gridContainer = useRef(null);
-
-  const [gridDimensions, setGridDimensions] = useState([0, 0]);
-
-  const [tileDimensions, setTileDimensions] = useState([
-    minTileDimensions[0],
-    minTileDimensions[1],
-  ]);
-
   const [algorithm, setAlgorithm] = useState(null);
 
   const [isDisabledUI, setIsDisabledUI] = useState(false);
 
-  useEffect(() => {
-    setGridDimensions([
-      gridContainer.current.clientWidth,
-      gridContainer.current.clientHeight,
-    ]);
-
-    window.addEventListener("resize", () => {
-      setGridDimensions([
-        gridContainer.current.clientWidth,
-        gridContainer.current.clientHeight,
-      ]);
-    });
-  }, []);
-
-  useEffect(() => {
-    setTileDimensions([
-      Math.floor(gridDimensions[0] / tileSize),
-      Math.floor(gridDimensions[1] / tileSize),
-    ]);
-  }, [gridDimensions]);
-
   return (
     <div className="flex w-screen h-screen">
       <aside className="w-72" aria-label="Sidebar">
-        <div
-          className={`overflow-y-auto w-72 h-screen min-h-[${
-            minTileDimensions[0] * tileSize
-          }px] p-5 bg-gray-50 rounded`}
-        >
+        <div className={`overflow-y-auto w-72 h-screen p-5 bg-gray-50 rounded`}>
           <a href="/" className="flex mb-2">
             <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
               Pathfinding Visualizer
@@ -137,17 +98,7 @@ const App = () => {
         </div>
       </aside>
 
-      <div
-        id="grid-container"
-        ref={gridContainer}
-        className={`bg-indigo-100 w-full h-full min-w-[${
-          minTileDimensions[1] * tileSize
-        }px] min-h-[${minTileDimensions[0] * tileSize}px] p-${
-          gridContainerPadding / 4
-        }`}
-      >
-        <Grid />
-      </div>
+      <Grid />
     </div>
   );
 };
