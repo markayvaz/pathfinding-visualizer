@@ -125,8 +125,6 @@ const Grid = () => {
   };
 
   const handleMouseDown = (e) => {
-    console.log(isMouseDown);
-
     const [col, row] = e.target.id.split("-");
 
     let updatedGrid = [...grid];
