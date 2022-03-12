@@ -1,6 +1,6 @@
-function Node(id, status) {
+function Node(id, state) {
   this.id = id;
-  this.status = status;
+  this.state = state;
 }
 
 export default Node;
