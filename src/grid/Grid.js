@@ -18,6 +18,8 @@ const Grid = () => {
 
   const [tileDimensions, setTileDimensions] = useState([36, 20]);
 
+  const [isMouseDown, setIsMouseDown] = useState(false);
+
   const [grid, setGrid] = useState([]);
 
   useEffect(() => {
@@ -44,10 +46,6 @@ const Grid = () => {
   useEffect(() => {
     createGrid();
   }, []);
-
-  useEffect(() => {
-    drawGrid();
-  }, [grid]);
 
   const createGrid = () => {
     // Create an empty 2D array with given tile dimensions.
@@ -112,10 +110,10 @@ const Grid = () => {
             tableHTML += `<td id="${j}-${i}" class="py-4 cursor-grab px-4 text-sm border-x bg-rose-500 hover:bg-rose-600 shadow-lg shadow-rose-500/50"></td>`;
             break;
           case "WALL":
-            tableHTML += `<td id="${j}-${i}" class="py-4 px-4 text-sm border-x bg-gray-500 shadow-lg shadow-gray-500/50"></td>`;
+            tableHTML += `<td id="${j}-${i}" class="py-4 cursor-crosshair px-4 text-sm border-x bg-slate-400 hover:bg-slate-500 shadow-lg shadow-slate-400/50"></td>`;
             break;
           default:
-            tableHTML += `<td id="${j}-${i}" class="py-4 cursor-crosshair px-4 text-sm border-x"></td>`;
+            tableHTML += `<td id="${j}-${i}" class="py-4 cursor-crosshair px-4 text-sm hover:bg-gray-300 border-x"></td>`;
             break;
         }
       });
@@ -123,7 +121,26 @@ const Grid = () => {
       tableHTML += "</tr>";
     });
 
-    gridRef.current.innerHTML = tableHTML;
+    return { __html: tableHTML };
+  };
+
+  const handleMouseDown = (e) => {
+    console.log(isMouseDown);
+
+    const [col, row] = e.target.id.split("-");
+
+    let updatedGrid = [...grid];
+
+    switch (grid[row][col].state) {
+      case "EMPTY":
+        updatedGrid[row][col].state = "WALL";
+        break;
+      case "WALL":
+        updatedGrid[row][col].state = "EMPTY";
+        break;
+    }
+
+    setGrid(updatedGrid);
   };
 
   return (
@@ -138,7 +155,11 @@ const Grid = () => {
     >
       <div className="overflow-hidden shadow-md rounded-lg">
         <table className="">
-          <tbody id="grid" ref={gridRef}></tbody>
+          <tbody
+            id="grid"
+            onMouseDown={(e) => handleMouseDown(e)}
+            dangerouslySetInnerHTML={drawGrid()}
+          ></tbody>
         </table>
       </div>
     </div>
