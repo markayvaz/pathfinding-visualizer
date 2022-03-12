@@ -5,9 +5,9 @@ import {
   minTileDimensions,
   gridContainerPadding,
 } from "./Properties";
+import { getRandomInt } from "../assets/HelperFunctions";
 
 // todo: 1. make grid responsive
-// todo: 2. create nodes
 
 const Grid = () => {
   const gridRef = useRef(null);
@@ -16,12 +16,9 @@ const Grid = () => {
 
   const [gridDimensions, setGridDimensions] = useState([0, 0]);
 
-  const [tileDimensions, setTileDimensions] = useState([
-    minTileDimensions[0],
-    minTileDimensions[1],
-  ]);
+  const [tileDimensions, setTileDimensions] = useState([36, 20]);
 
-  console.log(gridDimensions);
+  const [grid, setGrid] = useState([]);
 
   useEffect(() => {
     setGridDimensions([
@@ -45,27 +42,89 @@ const Grid = () => {
   }, [gridDimensions]);
 
   useEffect(() => {
-    const [columns, rows] = tileDimensions;
+    createGrid();
+  }, []);
 
-    let tableHTML = "";
+  useEffect(() => {
+    drawGrid();
+  }, [grid]);
 
-    for (let r = 0; r < 18; r++) {
-      tableHTML += '<tr class="bg-white border-b">';
-      for (let c = 0; c < 34; c++) {
-        if (c === 2 && r === 12) {
-          tableHTML +=
-            '<td class="py-4 px-4 text-sm border-x bg-indigo-600 shadow-lg shadow-indigo-600/50"></td>';
-        } else if (c === 12 && r === 5) {
-          tableHTML += '<td class="py-4 px-4 text-sm border-x bg-rose-500 shadow-lg shadow-rose-500/50"></td>';
-        } else {
-          tableHTML += '<td class="py-4 px-4 text-sm border-x"></td>';
+  const createGrid = () => {
+    // Create an empty 2D array with given tile dimensions.
+    const undefinedGrid = [...Array(tileDimensions[1]).fill(undefined)].map(
+      () => Array(tileDimensions[0]).fill(undefined)
+    );
+
+    const [startPosition, goalPosition] = getStartingPositions();
+
+    const definedGrid = undefinedGrid.map((row, i) => {
+      return row.map((col, j) => {
+        if (j === startPosition[0] && i === startPosition[1]) {
+          return new Node([j, i], "PLAYER");
+        } else if (j === goalPosition[0] && i === goalPosition[1]) {
+          return new Node([j, i], "GOAL");
         }
-      }
-      tableHTML += "</tr>";
+        return new Node([j, i], "EMPTY");
+      });
+    });
+
+    setGrid(definedGrid);
+  };
+
+  const getStartingPositions = () => {
+    let startPosition = [
+      getRandomInt(tileDimensions[0]),
+      getRandomInt(tileDimensions[1]),
+    ];
+
+    let goalPosition = [
+      getRandomInt(tileDimensions[0]),
+      getRandomInt(tileDimensions[1]),
+    ];
+
+    while (startPosition.toString() === goalPosition.toString()) {
+      startPosition = [
+        getRandomInt(tileDimensions[0]),
+        getRandomInt(tileDimensions[1]),
+      ];
+
+      goalPosition = [
+        getRandomInt(tileDimensions[0]),
+        getRandomInt(tileDimensions[1]),
+      ];
     }
 
+    return [startPosition, goalPosition];
+  };
+
+  const drawGrid = () => {
+    let tableHTML = "";
+
+    grid.map((row, i) => {
+      tableHTML += `<tr class="bg-white border-b">`;
+
+      row.map((node, j) => {
+        switch (node.state) {
+          case "PLAYER":
+            tableHTML += `<td id="${j}-${i}" class="py-4 cursor-grab px-4 text-sm border-x bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/50"></td>`;
+            break;
+          case "GOAL":
+            tableHTML += `<td id="${j}-${i}" class="py-4 cursor-grab px-4 text-sm border-x bg-rose-500 hover:bg-rose-600 shadow-lg shadow-rose-500/50"></td>`;
+            break;
+          case "WALL":
+            tableHTML += `<td id="${j}-${i}" class="py-4 px-4 text-sm border-x bg-gray-500 shadow-lg shadow-gray-500/50"></td>`;
+            break;
+          default:
+            tableHTML += `<td id="${j}-${i}" class="py-4 cursor-crosshair px-4 text-sm border-x"></td>`;
+            break;
+        }
+      });
+
+      tableHTML += "</tr>";
+    });
+
     gridRef.current.innerHTML = tableHTML;
-  }, [tileDimensions]);
+  };
 
   return (
     <div
