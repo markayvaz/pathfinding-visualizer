@@ -98,6 +98,8 @@ const Grid = () => {
   const drawGrid = () => {
     let tableHTML = "";
 
+    // ! how can we make this return JSX?
+
     grid.map((row, i) => {
       tableHTML += `<tr class="bg-white border-b">`;
 
