@@ -98,8 +98,6 @@ const Grid = () => {
   const drawGrid = () => {
     let tableHTML = "";
 
-    let a = <></>;
-
     grid.map((row, i) => {
       tableHTML += `<tr class="bg-white border-b">`;
 
