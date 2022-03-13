@@ -98,6 +98,8 @@ const Grid = () => {
   const drawGrid = () => {
     let tableHTML = "";
 
+    let a = <></>;
+
     grid.map((row, i) => {
       tableHTML += `<tr class="bg-white border-b">`;
 
@@ -141,6 +143,10 @@ const Grid = () => {
     setGrid(updatedGrid);
   };
 
+  const handleMouseMove = (e) => {
+    console.log(e);
+  };
+
   return (
     <div
       id="grid-container"
@@ -156,6 +162,7 @@ const Grid = () => {
           <tbody
             id="grid"
             onMouseDown={(e) => handleMouseDown(e)}
+            onMouseEnter={(e) => handleMouseMove(e)}
             dangerouslySetInnerHTML={drawGrid()}
           ></tbody>
         </table>
