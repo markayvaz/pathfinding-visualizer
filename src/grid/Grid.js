@@ -95,35 +95,52 @@ const Grid = () => {
     return [startPosition, goalPosition];
   };
 
-  const drawGrid = () => {
-    let tableHTML = "";
-
-    // ! how can we make this return JSX?
+  const renderGrid = () => {
+    let rows = [];
 
     grid.map((row, i) => {
-      tableHTML += `<tr class="bg-white border-b">`;
-
+      let columns = [];
       row.map((node, j) => {
         switch (node.state) {
           case "PLAYER":
-            tableHTML += `<td id="${j}-${i}" class="py-4 cursor-grab px-4 text-sm border-x bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/50"></td>`;
+            columns.push(
+              <td
+                id={`${j}-${i}`}
+                class="py-4 cursor-grab px-4 text-sm border-x bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/50"
+              ></td>
+            );
             break;
           case "GOAL":
-            tableHTML += `<td id="${j}-${i}" class="py-4 cursor-grab px-4 text-sm border-x bg-rose-500 hover:bg-rose-600 shadow-lg shadow-rose-500/50"></td>`;
+            columns.push(
+              <td
+                id={`${j}-${i}`}
+                class="py-4 cursor-grab px-4 text-sm border-x bg-rose-500 hover:bg-rose-600 shadow-lg shadow-rose-500/50"
+              ></td>
+            );
             break;
           case "WALL":
-            tableHTML += `<td id="${j}-${i}" class="py-4 cursor-crosshair px-4 text-sm border-x bg-slate-400 hover:bg-slate-500 shadow-lg shadow-slate-400/50"></td>`;
+            columns.push(
+              <td
+                id={`${j}-${i}`}
+                class="py-4 cursor-crosshair px-4 text-sm border-x bg-slate-400 hover:bg-slate-500 shadow-lg shadow-slate-400/50"
+              ></td>
+            );
             break;
           default:
-            tableHTML += `<td id="${j}-${i}" class="py-4 cursor-crosshair px-4 text-sm hover:bg-gray-300 border-x"></td>`;
+            columns.push(
+              <td
+                id={`${j}-${i}`}
+                class="py-4 cursor-crosshair px-4 text-sm hover:bg-gray-300 border-x"
+              ></td>
+            );
             break;
         }
       });
 
-      tableHTML += "</tr>";
+      rows.push(<tr class="bg-white border-b">{columns}</tr>);
     });
 
-    return { __html: tableHTML };
+    return rows;
   };
 
   const handleMouseDown = (e) => {
@@ -163,8 +180,9 @@ const Grid = () => {
             id="grid"
             onMouseDown={(e) => handleMouseDown(e)}
             onMouseEnter={(e) => handleMouseMove(e)}
-            dangerouslySetInnerHTML={drawGrid()}
-          ></tbody>
+          >
+            {renderGrid()}
+          </tbody>
         </table>
       </div>
     </div>
