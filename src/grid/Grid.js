@@ -142,7 +142,11 @@ const Grid = () => {
               <td
                 id={`${j}-${i}`}
                 key={`${j}-${i}`}
-                className="py-4 cursor-crosshair px-4 text-sm border-x bg-slate-400 hover:bg-slate-300/50 shadow-lg shadow-slate-400/50"
+                className={`py-4 px-4 text-sm border-x bg-slate-400 ${
+                  !draggedNode
+                    ? "hover:bg-slate-300/50 cursor-crosshair"
+                    : "cursor-grabbing"
+                } shadow-lg shadow-slate-400/50`}
                 onMouseEnter={(e) => handleMouseEnter(e)}
                 onMouseUp={(e) => handleMouseUp(e)}
               ></td>
