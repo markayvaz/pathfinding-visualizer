@@ -208,26 +208,26 @@ const Grid = () => {
   const handleMouseEnter = (e) => {
     e.preventDefault();
 
-    const [col, row] = e.target.id.split("-");
+    if (isMouseDown) {
+      const [col, row] = e.target.id.split("-");
 
-    let updatedGrid = [...grid];
+      let updatedGrid = [...grid];
 
-    if (draggedNode === "PLAYER" && grid[row][col].state === "EMPTY") {
-      updatedGrid[player[1]][player[0]].state = "EMPTY";
-
-      updatedGrid[row][col].state = "PLAYER";
-
-      setPlayer([col, row]);
-    } else if (draggedNode === "GOAL" && grid[row][col].state === "EMPTY") {
-      updatedGrid[goal[1]][goal[0]].state = "EMPTY";
-
-      updatedGrid[row][col].state = "GOAL";
-
-      setPlayer([col, row]);
-    } else if (isMouseDown) {
       switch (grid[row][col].state) {
         case "EMPTY":
-          if (isDrawingWalls) {
+          if (draggedNode === "PLAYER") {
+            updatedGrid[player[1]][player[0]].state = "EMPTY";
+
+            updatedGrid[row][col].state = "PLAYER";
+
+            setPlayer([col, row]);
+          } else if (draggedNode === "GOAL") {
+            updatedGrid[goal[1]][goal[0]].state = "EMPTY";
+
+            updatedGrid[row][col].state = "GOAL";
+
+            setGoal([col, row]);
+          } else if (isDrawingWalls) {
             updatedGrid[row][col].state = "WALL";
           }
           break;
@@ -239,9 +239,9 @@ const Grid = () => {
         default:
           break;
       }
-    }
 
-    setGrid(updatedGrid);
+      setGrid(updatedGrid);
+    }
   };
 
   const handleMouseUp = (e) => {
@@ -253,6 +253,7 @@ const Grid = () => {
   const handleMouseLeave = (e) => {
     e.preventDefault();
     setIsMouseDown(false);
+    setDraggedNode(null);
   };
 
   return (
