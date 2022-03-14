@@ -19,6 +19,7 @@ const Grid = () => {
   const [tileDimensions, setTileDimensions] = useState([36, 20]);
 
   const [isMouseDown, setIsMouseDown] = useState(false);
+  const [isDrawingWalls, setIsDrawingWalls] = useState(false);
 
   const [grid, setGrid] = useState([]);
 
@@ -168,9 +169,11 @@ const Grid = () => {
     switch (grid[row][col].state) {
       case "EMPTY":
         updatedGrid[row][col].state = "WALL";
+        setIsDrawingWalls(true);
         break;
       case "WALL":
         updatedGrid[row][col].state = "EMPTY";
+        setIsDrawingWalls(false);
         break;
     }
 
@@ -178,14 +181,18 @@ const Grid = () => {
   };
 
   const handleMouseUp = (e) => {
+    e.preventDefault();
     setIsMouseDown(false);
   };
 
   const handleMouseLeave = (e) => {
+    e.preventDefault();
     setIsMouseDown(false);
   };
 
   const handleMouseEnter = (e) => {
+    e.preventDefault();
+
     if (isMouseDown) {
       const [col, row] = e.target.id.split("-");
 
@@ -193,10 +200,14 @@ const Grid = () => {
 
       switch (grid[row][col].state) {
         case "EMPTY":
-          updatedGrid[row][col].state = "WALL";
+          if (isDrawingWalls) {
+            updatedGrid[row][col].state = "WALL";
+          }
           break;
         case "WALL":
-          updatedGrid[row][col].state = "EMPTY";
+          if (!isDrawingWalls) {
+            updatedGrid[row][col].state = "EMPTY";
+          }
           break;
       }
 
