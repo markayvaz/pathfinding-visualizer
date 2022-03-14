@@ -96,6 +96,7 @@ const Grid = () => {
   };
 
   const renderGrid = () => {
+    // todo: add event listeners to each node
     let rows = [];
 
     grid.map((row, i) => {
@@ -107,6 +108,8 @@ const Grid = () => {
               <td
                 id={`${j}-${i}`}
                 class="py-4 cursor-grab px-4 text-sm border-x bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/50"
+                onMouseEnter={(e) => handleMouseEnter(e)}
+                onMouseUp={(e) => handleMouseUp(e)}
               ></td>
             );
             break;
@@ -115,6 +118,8 @@ const Grid = () => {
               <td
                 id={`${j}-${i}`}
                 class="py-4 cursor-grab px-4 text-sm border-x bg-rose-500 hover:bg-rose-600 shadow-lg shadow-rose-500/50"
+                onMouseEnter={(e) => handleMouseEnter(e)}
+                onMouseUp={(e) => handleMouseUp(e)}
               ></td>
             );
             break;
@@ -123,6 +128,8 @@ const Grid = () => {
               <td
                 id={`${j}-${i}`}
                 class="py-4 cursor-crosshair px-4 text-sm border-x bg-slate-400 hover:bg-slate-500 shadow-lg shadow-slate-400/50"
+                onMouseEnter={(e) => handleMouseEnter(e)}
+                onMouseUp={(e) => handleMouseUp(e)}
               ></td>
             );
             break;
@@ -131,6 +138,8 @@ const Grid = () => {
               <td
                 id={`${j}-${i}`}
                 class="py-4 cursor-crosshair px-4 text-sm hover:bg-gray-300 border-x"
+                onMouseEnter={(e) => handleMouseEnter(e)}
+                onMouseUp={(e) => handleMouseUp(e)}
               ></td>
             );
             break;
@@ -144,7 +153,15 @@ const Grid = () => {
   };
 
   const handleMouseDown = (e) => {
+    e.preventDefault();
+
     const [col, row] = e.target.id.split("-");
+
+    const nodeState = grid[row][col].state;
+
+    if (nodeState === "EMPTY" || nodeState === "WALL") {
+      setIsMouseDown(true);
+    }
 
     let updatedGrid = [...grid];
 
@@ -160,8 +177,31 @@ const Grid = () => {
     setGrid(updatedGrid);
   };
 
-  const handleMouseMove = (e) => {
-    console.log(e);
+  const handleMouseUp = (e) => {
+    setIsMouseDown(false);
+  };
+
+  const handleMouseLeave = (e) => {
+    setIsMouseDown(false);
+  };
+
+  const handleMouseEnter = (e) => {
+    if (isMouseDown) {
+      const [col, row] = e.target.id.split("-");
+
+      let updatedGrid = [...grid];
+
+      switch (grid[row][col].state) {
+        case "EMPTY":
+          updatedGrid[row][col].state = "WALL";
+          break;
+        case "WALL":
+          updatedGrid[row][col].state = "EMPTY";
+          break;
+      }
+
+      setGrid(updatedGrid);
+    }
   };
 
   return (
@@ -179,7 +219,7 @@ const Grid = () => {
           <tbody
             id="grid"
             onMouseDown={(e) => handleMouseDown(e)}
-            onMouseEnter={(e) => handleMouseMove(e)}
+            onMouseLeave={(e) => handleMouseLeave(e)}
           >
             {renderGrid()}
           </tbody>
