@@ -146,6 +146,8 @@ const Grid = () => {
                   !draggedNode
                     ? "hover:bg-slate-300/50 cursor-crosshair"
                     : "cursor-grabbing"
+                } ${
+                  isDrawingWalls && "hover:bg-slate-400"
                 } shadow-lg shadow-slate-400/50`}
                 onMouseEnter={(e) => handleMouseEnter(e)}
                 onMouseUp={(e) => handleMouseUp(e)}
