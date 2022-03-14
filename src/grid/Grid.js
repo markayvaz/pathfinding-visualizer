@@ -7,11 +7,9 @@ import {
 } from "./Properties";
 import { getRandomInt } from "../assets/HelperFunctions";
 
-// todo: 1. make grid responsive
+// todo: Make grid responsive.
 
 const Grid = () => {
-  const gridRef = useRef(null);
-
   const gridContainerRef = useRef(null);
 
   const [gridDimensions, setGridDimensions] = useState([0, 0]);
@@ -104,7 +102,6 @@ const Grid = () => {
   };
 
   const renderGrid = () => {
-    // todo: add event listeners to each node
     let rows = [];
 
     grid.map((row, i) => {
