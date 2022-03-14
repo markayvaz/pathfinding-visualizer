@@ -20,8 +20,12 @@ const Grid = () => {
 
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [isDrawingWalls, setIsDrawingWalls] = useState(false);
+  const [draggedNode, setDraggedNode] = useState(null);
 
   const [grid, setGrid] = useState([]);
+
+  const [player, setPlayer] = useState(null);
+  const [goal, setGoal] = useState(null);
 
   useEffect(() => {
     setGridDimensions([
@@ -93,6 +97,9 @@ const Grid = () => {
       ];
     }
 
+    setPlayer(startPosition);
+    setGoal(goalPosition);
+
     return [startPosition, goalPosition];
   };
 
@@ -108,7 +115,10 @@ const Grid = () => {
             columns.push(
               <td
                 id={`${j}-${i}`}
-                class="py-4 cursor-grab px-4 text-sm border-x bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/50"
+                key={`${j}-${i}`}
+                className={`py-4 cursor-${
+                  draggedNode ? "grabbing" : "grab"
+                } px-4 text-sm border-x bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/50`}
                 onMouseEnter={(e) => handleMouseEnter(e)}
                 onMouseUp={(e) => handleMouseUp(e)}
               ></td>
@@ -118,7 +128,10 @@ const Grid = () => {
             columns.push(
               <td
                 id={`${j}-${i}`}
-                class="py-4 cursor-grab px-4 text-sm border-x bg-rose-500 hover:bg-rose-600 shadow-lg shadow-rose-500/50"
+                key={`${j}-${i}`}
+                className={`py-4 cursor-${
+                  draggedNode ? "grabbing" : "grab"
+                } px-4 text-sm border-x bg-rose-500 hover:bg-rose-600 shadow-lg shadow-rose-500/50`}
                 onMouseEnter={(e) => handleMouseEnter(e)}
                 onMouseUp={(e) => handleMouseUp(e)}
               ></td>
@@ -128,7 +141,8 @@ const Grid = () => {
             columns.push(
               <td
                 id={`${j}-${i}`}
-                class="py-4 cursor-crosshair px-4 text-sm border-x bg-slate-400 hover:bg-slate-500 shadow-lg shadow-slate-400/50"
+                key={`${j}-${i}`}
+                className="py-4 cursor-crosshair px-4 text-sm border-x bg-slate-400 hover:bg-slate-500 shadow-lg shadow-slate-400/50"
                 onMouseEnter={(e) => handleMouseEnter(e)}
                 onMouseUp={(e) => handleMouseUp(e)}
               ></td>
@@ -138,7 +152,8 @@ const Grid = () => {
             columns.push(
               <td
                 id={`${j}-${i}`}
-                class="py-4 cursor-crosshair px-4 text-sm hover:bg-gray-300 border-x"
+                key={`${j}-${i}`}
+                className="py-4 cursor-crosshair px-4 text-sm hover:bg-gray-300 border-x"
                 onMouseEnter={(e) => handleMouseEnter(e)}
                 onMouseUp={(e) => handleMouseUp(e)}
               ></td>
@@ -147,7 +162,11 @@ const Grid = () => {
         }
       });
 
-      rows.push(<tr class="bg-white border-b">{columns}</tr>);
+      rows.push(
+        <tr key={`row-${i}`} className="bg-white border-b">
+          {columns}
+        </tr>
+      );
     });
 
     return rows;
@@ -156,17 +175,15 @@ const Grid = () => {
   const handleMouseDown = (e) => {
     e.preventDefault();
 
+    setIsMouseDown(true);
+
     const [col, row] = e.target.id.split("-");
 
     const nodeState = grid[row][col].state;
 
-    if (nodeState === "EMPTY" || nodeState === "WALL") {
-      setIsMouseDown(true);
-    }
-
     let updatedGrid = [...grid];
 
-    switch (grid[row][col].state) {
+    switch (nodeState) {
       case "EMPTY":
         updatedGrid[row][col].state = "WALL";
         setIsDrawingWalls(true);
@@ -175,29 +192,39 @@ const Grid = () => {
         updatedGrid[row][col].state = "EMPTY";
         setIsDrawingWalls(false);
         break;
+      case "PLAYER":
+        setDraggedNode("PLAYER");
+        break;
+      case "GOAL":
+        setDraggedNode("GOAL");
+        break;
+      default:
+        break;
     }
 
     setGrid(updatedGrid);
   };
 
-  const handleMouseUp = (e) => {
-    e.preventDefault();
-    setIsMouseDown(false);
-  };
-
-  const handleMouseLeave = (e) => {
-    e.preventDefault();
-    setIsMouseDown(false);
-  };
-
   const handleMouseEnter = (e) => {
     e.preventDefault();
 
-    if (isMouseDown) {
-      const [col, row] = e.target.id.split("-");
+    const [col, row] = e.target.id.split("-");
 
-      let updatedGrid = [...grid];
+    let updatedGrid = [...grid];
 
+    if (draggedNode === "PLAYER" && grid[row][col].state === "EMPTY") {
+      updatedGrid[player[1]][player[0]].state = "EMPTY";
+
+      updatedGrid[row][col].state = "PLAYER";
+
+      setPlayer([col, row]);
+    } else if (draggedNode === "GOAL" && grid[row][col].state === "EMPTY") {
+      updatedGrid[goal[1]][goal[0]].state = "EMPTY";
+
+      updatedGrid[row][col].state = "GOAL";
+
+      setPlayer([col, row]);
+    } else if (isMouseDown) {
       switch (grid[row][col].state) {
         case "EMPTY":
           if (isDrawingWalls) {
@@ -209,10 +236,23 @@ const Grid = () => {
             updatedGrid[row][col].state = "EMPTY";
           }
           break;
+        default:
+          break;
       }
-
-      setGrid(updatedGrid);
     }
+
+    setGrid(updatedGrid);
+  };
+
+  const handleMouseUp = (e) => {
+    e.preventDefault();
+    setIsMouseDown(false);
+    setDraggedNode(null);
+  };
+
+  const handleMouseLeave = (e) => {
+    e.preventDefault();
+    setIsMouseDown(false);
   };
 
   return (
@@ -231,6 +271,7 @@ const Grid = () => {
             id="grid"
             onMouseDown={(e) => handleMouseDown(e)}
             onMouseLeave={(e) => handleMouseLeave(e)}
+            onMouseUp={(e) => handleMouseUp(e)}
           >
             {renderGrid()}
           </tbody>
