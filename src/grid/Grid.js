@@ -253,12 +253,14 @@ const Grid = () => {
   const handleMouseUp = (e) => {
     e.preventDefault();
     setIsMouseDown(false);
+    setIsDrawingWalls(false);
     setDraggedNode(null);
   };
 
   const handleMouseLeave = (e) => {
     e.preventDefault();
     setIsMouseDown(false);
+    setIsDrawingWalls(false);
     setDraggedNode(null);
   };
 
