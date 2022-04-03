@@ -5,7 +5,7 @@ import {
   minTileDimensions,
   gridContainerPadding,
 } from "./Properties";
-import { getRandomInt } from "../assets/HelperFunctions";
+import { getRandomInt } from "../utils/HelperFunctions";
 
 // todo: Make grid responsive.
 
